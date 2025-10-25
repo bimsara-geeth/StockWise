@@ -59,5 +59,3 @@ def dashboard(request) :
     }    
     
     return HttpResponse(template.render(context,request))
-    
-    

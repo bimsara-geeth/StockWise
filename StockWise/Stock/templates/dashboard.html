@@ -143,7 +143,7 @@
                 <div class="collapse navbar-collapse d-lg-flex order-lg-3" id="userMenu">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item d-none d-lg-block">
-                            <a class="btn btn-sm btn-outline-secondary me-2" href="#"><i class="bi bi-person-circle"></i> {{username}}</a>
+                            <a class="btn btn-sm btn-outline-secondary me-2" href="#"><i class="bi bi-person-circle"></i> {{user.username}}</a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-sm btn-outline-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
@@ -176,12 +176,12 @@
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <div class="me-3">
                                 <span class="metric-value" style="color: var(--accent-green);">
-                                    <i class="bi bi-arrow-up-right me-2" id="pnlIcon"></i><span class="counter-value" id="pnlValue" data-target="15250.00">0.00</span>
+                                    <i class="bi bi-arrow-up-right me-2" id="pnlIcon"></i><span class="counter-value" id="pnlValue" data-target="15356.44">0.00</span>
                                 </span>
-                                <small class="d-block mt-2" style="color: var(--muted-text);">Realized / Unrealized Gain</small>
+                                <small class="d-block mt-2" style="color: var(--muted-text);">Realized Gain</small>
                             </div>
                             <span class="metric-percent positive rounded" id="pnlPercent" data-target="1.03">
-                                +0.00%
+                                +8.05%
                             </span>
                         </div>
                     </div>
@@ -227,7 +227,7 @@
                             <th scope="col">Current Price (LKR)</th>
                             <th scope="col">Market Value (LKR)</th>
                             <th scope="col">Day P&L (%)</th>
-                            <th scope="col">Action</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -240,9 +240,7 @@
                             <td class="change-percent positive fw-bold">
                                 <i class="bi bi-triangle-fill increase-symbol"></i> +3.67%
                             </td>
-                            <td>
-                                <button class="btn btn-sm btn-sell" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Sell">Sell</button>
-                            </td>
+                           
                         </tr>
                         <tr>
                             <th scope="row" class="fw-bold">COMB.N0000</th>
@@ -253,9 +251,7 @@
                             <td class="change-percent negative fw-bold">
                                 <i class="bi bi-triangle-fill decrease-symbol"></i> -2.00%
                             </td>
-                            <td>
-                                <button class="btn btn-sm btn-buy" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Buy">Buy</button>
-                            </td>
+                            
                         </tr>
                         <tr>
                             <th scope="row" class="fw-bold">SPEN.N0000</th>
@@ -266,9 +262,7 @@
                             <td class="text-muted">
                                 <i class="bi bi-dash-lg" style="color: var(--muted-text);"></i> 0.00%
                             </td>
-                            <td>
-                                <button class="btn btn-sm btn-buy" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Buy">Buy</button>
-                            </td>
+                           
                         </tr>
                     </tbody>
                 </table>

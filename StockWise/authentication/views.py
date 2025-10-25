@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from UserProfile.models import userprofile
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'main.html')
 
 def login_page(request):
     # Check if the HTTP request method is POST (form submission)

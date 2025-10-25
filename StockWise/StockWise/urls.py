@@ -19,13 +19,15 @@ from django.urls import path,include
 from authentication.views import *
 from django.conf import settings   # Application settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns  
-
+from django.conf import settings 
+from django.conf.urls.static import static 
 urlpatterns = [
+    path('', include('django.contrib.auth.urls')),
     path('', home, name="home"),      # Home page
     path("admin/", admin.site.urls),          # Admin interface
     path('login/', login_page, name='login_page'),    # Login page
     path('register/', register_page, name='register'),  # Registration page
-    path('dashboard/', include('Stock.urls'), name='dashboard'),  # Registration page
+    path('', include('Stock.urls'), name='dashboard'),  # Registration page
 ]
 
 # Serve media files if DEBUG is True (development mode)
