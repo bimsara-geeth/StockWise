@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
      "authentication",
+     'Stock',
+     'UserProfile'
 ]
 
 MIDDLEWARE = [
@@ -130,3 +132,24 @@ STATICFILES_DIR = {
 MEDIA_ROOT = os.path.join(BASE_DIR, 'public/static')
 MEDIA_URL = '/media/'
 
+# settings.py
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'stocks': {
+            'handlers': ['console'],
+            'level': 'DEBUG', # Use DEBUG to see the update/create messages
+            'propagate': False,
+        },
+    },
+}

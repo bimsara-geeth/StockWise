@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import *
+from UserProfile.models import userprofile
 
 def home(request):
     return render(request, 'home.html')
@@ -57,7 +57,8 @@ def register_page(request):
             last_name=last_name,
             username=username
         )
-        
+        a = userprofile(cash_balance=0.0 , user = username)
+        a.save()
         # Set the user's password and save the user object
         user.set_password(password)
         user.save()

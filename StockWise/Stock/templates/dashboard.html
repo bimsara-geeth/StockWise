@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockWise - User Dashboard</title> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        /* Colorful Light Mode Color Palette (Retained) */
+        :root {
+            --primary-bg: #EAF2F8; /* Very light blue-grey background */
+            --secondary-bg: #FFFFFF; /* Crisp White for main cards */
+            --tertiary-bg: #F8F9FA; /* Slightly off-white for certain elements */
+            --accent-blue: #0A66C2; /* Professional Blue for primary accents */
+            --accent-green: #28A745; /* Vibrant Green for profit */
+            --accent-red: #DC3545; /* Strong Red for loss */
+            --text-color: #2C3E50; /* Darker text for excellent readability */
+            --muted-text: #7F8C8D; /* Soft gray for secondary text */
+            --border-color: #DDEBF0; /* Subtle light blue border */
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --hover-shadow-color: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* NavBar Styling */
+        .navbar {
+            background-color: var(--secondary-bg) !important;
+            border-bottom: 3px solid var(--accent-blue); /* Added thicker border for distinction */
+            box-shadow: 0 2px 6px var(--shadow-color);
+        }
+
+        /* Card and Metrics Styling */
+        .card {
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* P&L Box Styling */
+        .profit-card {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border-left: 5px solid;
+            padding: 2rem;
+        }
+        .profit-card.positive { border-left-color: var(--accent-green); }
+        .profit-card.negative { border-left-color: var(--accent-red); }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .metric-percent.positive { background-color: rgba(40, 167, 69, 0.1); color: var(--accent-green); }
+        .metric-percent.negative { background-color: rgba(220, 53, 69, 0.1); color: var(--accent-red); }
+
+        /* Action Buttons Styling */
+        .btn-buy { background-color: var(--accent-green); border-color: var(--accent-green); color: white; }
+        .btn-sell { background-color: var(--accent-red); border-color: var(--accent-red); color: white; }
+        .btn-deposit { background-color: var(--accent-blue); border-color: var(--accent-blue); color: white; }
+        .btn-withdraw { background-color: var(--muted-text); border-color: var(--muted-text); color: white; }
+        
+        /* Table Styling FIX: Emphasize rows, better separation */
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .table thead th { 
+            border-bottom: 2px solid var(--accent-blue); 
+            background-color: #E6EEF3; /* Slightly darker header */
+            color: var(--text-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #F0F5F8; /* Light hover */
+        }
+        .table th, .table td { border-color: transparent; padding: 1rem 1rem; }
+        .table .change-percent { font-size: 1rem; }
+        
+        /* Increase/Decrease symbols */
+        .positive-symbol { color: var(--accent-green); margin-right: 5px; }
+        .negetive-symbol { color: var(--accent-red); margin-right: 5px; display: inline-block; transform: rotate(180deg);}
+
+        /* Metric Counter Animation CSS */
+        .counter-value {
+            /* Ensures numbers are monospaced during counting */
+            font-variant-numeric: tabular-nums; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid px-md-5">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-graph-up-arrow me-2" style="color: var(--accent-green);"></i>
+                <span class="d-none d-sm-inline">StockWise</span>
+                <span class="d-sm-none">SW</span>
+            </a>
+            <div class="d-flex order-lg-2">
+                 <button class="btn btn-sm btn-outline-secondary me-2 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#userMenu" aria-controls="userMenu" aria-expanded="false">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse order-lg-1" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link index-value" href="#">
+                            <span class="index-label">ASPI</span> 
+                            <span class="index-val">{{asip}}</span>
+                            <span class="change-percent {{asipmark}}">
+                                <i class="bi bi-triangle-fill {{asipmark}}-symbol"></i> {{asipchange}}
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link index-value" href="#">
+                            <span class="index-label">   |   </span> 
+                            <span class="index-label">S&P SL20</span> 
+                            <span class="index-val">{{spp}}</span>
+                            <span class="change-percent {{sppmark}}">
+                                <i class="bi bi-triangle-fill {{sppmark}}-symbol"></i> {{sppchange}}
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="collapse navbar-collapse d-lg-flex order-lg-3" id="userMenu">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="btn btn-sm btn-outline-secondary me-2" href="#"><i class="bi bi-person-circle"></i> {{username}}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-sm btn-outline-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid py-5 px-md-5">
+
+        <div class="row g-4 mb-5">
+            <div class="col-lg-4 col-md-6">
+                <div class="card p-4 h-100 d-flex flex-column justify-content-center">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-wallet-fill h1 me-3" style="color: var(--accent-blue);"></i>
+                        <div>
+                            <p class="text-uppercase mb-1 fw-bold" style="color: var(--muted-text);">Total Asset Value</p>
+                            <h2 class="fw-bold mb-0">LKR <span class="counter-value" id="tavValue" data-target="{{bal}}">0.00</span></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 col-md-6">
+                <div id="profitDisplay" class="card profit-card h-100 positive d-flex flex-column justify-content-between">
+                    <div>
+                        <p class="text-uppercase fw-bold mb-3" style="color: var(--muted-text);">Today's Portfolio P&L</p>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="me-3">
+                                <span class="metric-value" style="color: var(--accent-green);">
+                                    <i class="bi bi-arrow-up-right me-2" id="pnlIcon"></i><span class="counter-value" id="pnlValue" data-target="15250.00">0.00</span>
+                                </span>
+                                <small class="d-block mt-2" style="color: var(--muted-text);">Realized / Unrealized Gain</small>
+                            </div>
+                            <span class="metric-percent positive rounded" id="pnlPercent" data-target="1.03">
+                                +0.00%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="mb-4"><i class="bi bi-lightning-charge-fill me-2" style="color: var(--accent-blue);"></i> Quick Actions</h3>
+        <div class="row g-3 mb-5 action-btns">
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-buy w-100" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Buy">
+                    <i class="bi bi-bag-plus-fill me-2"></i> BUY Stocks
+                </button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-sell w-100" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Sell">
+                    <i class="bi bi-bag-dash-fill me-2"></i> SELL Stocks
+                </button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-deposit w-100" data-bs-toggle="modal" data-bs-target="#fundModal" data-action="Deposit">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Deposit Funds
+                </button>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <button type="button" class="btn btn-withdraw w-100" data-bs-toggle="modal" data-bs-target="#fundModal" data-action="Withdraw">
+                    <i class="bi bi-box-arrow-up-left me-2"></i> Withdraw Funds
+                </button>
+            </div>
+        </div>
+
+        <hr class="my-5" style="border-color: var(--border-color);">
+        
+        <h3 class="mb-4 mt-4"><i class="bi bi-stack me-2" style="color: var(--accent-green);"></i> My Portfolio Holdings</h3>
+        <div class="card p-3">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Symbol</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Avg. Cost (LKR)</th>
+                            <th scope="col">Current Price (LKR)</th>
+                            <th scope="col">Market Value (LKR)</th>
+                            <th scope="col">Day P&L (%)</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="fw-bold">JKH.N0000</th>
+                            <td>500</td>
+                            <td>150.00</td>
+                            <td>155.50</td>
+                            <td>77,750.00</td>
+                            <td class="change-percent positive fw-bold">
+                                <i class="bi bi-triangle-fill increase-symbol"></i> +3.67%
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-sell" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Sell">Sell</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold">COMB.N0000</th>
+                            <td>1200</td>
+                            <td>90.00</td>
+                            <td>88.20</td>
+                            <td>105,840.00</td>
+                            <td class="change-percent negative fw-bold">
+                                <i class="bi bi-triangle-fill decrease-symbol"></i> -2.00%
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-buy" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Buy">Buy</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold">SPEN.N0000</th>
+                            <td>300</td>
+                            <td>25.50</td>
+                            <td>25.50</td>
+                            <td>7,650.00</td>
+                            <td class="text-muted">
+                                <i class="bi bi-dash-lg" style="color: var(--muted-text);"></i> 0.00%
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-buy" data-bs-toggle="modal" data-bs-target="#buySellModal" data-action="Buy">Buy</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="buySellModal" tabindex="-1" aria-labelledby="buySellModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="buySellModalLabel">Stock Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="transactionType" class="form-label fw-bold">Action</label>
+                            <select class="form-select" id="transactionType" required>
+                                <option value="Buy">BUY - Place Order to Acquire</option>
+                                <option value="Sell">SELL - Place Order to Dispose</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stockSymbol" class="form-label fw-bold">Stock Symbol</label>
+                            <input type="text" class="form-control" id="stockSymbol" placeholder="e.g., JKH.N0000" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label fw-bold">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="limitPrice" class="form-label fw-bold">Limit Price (LKR) <small class="text-muted"> - Optional</small></label>
+                            <input type="number" class="form-control" id="limitPrice" step="0.01" placeholder="Market Price if empty">
+                        </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="confirmTradeBtn">Confirm Trade</button>
+                </div></form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="fundModal" tabindex="-1" aria-labelledby="fundModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="fundModalLabel">Fund Transfer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"> 
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="fundActionType" class="form-label fw-bold">Action</label>
+                            <select class="form-select" id="fundActionType" name='wi' required>
+                                <option value="Deposit">Deposit</option>
+                                <option value="Withdraw">Withdraw</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fundAmount" class="form-label fw-bold" >Amount (LKR)</label>
+                            <input type="number" class="form-control" id="fundAmount" name="am" min="1" step="0.01" required>
+                        </div>
+                      
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="conBtn">Confirm Transaction</button>
+                </div> </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        // --- Metric Counter Animation Function ---
+        const animateCounter = (elementId, targetValue, duration = 1500) => {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            const isCurrency = element.closest('.metric-value') || elementId === 'tavValue';
+            const isPercent = elementId.includes('pnlPercent');
+            
+            const startValue = 0;
+            const target = parseFloat(targetValue);
+            let startTime = null;
+
+            // Determine sign and color (for P&L)
+            const sign = target >= 0 ? '+' : '-';
+            const absTarget = Math.abs(target);
+            
+            // Get PNL icon element if applicable
+            const pnlIcon = document.getElementById('pnlIcon');
+            const pnlCard = document.getElementById('profitDisplay');
+
+            if (pnlCard) {
+                pnlCard.classList.remove('positive', 'negative');
+                pnlCard.classList.add(target >= 0 ? 'positive' : 'negative');
+            }
+            if (pnlIcon) {
+                pnlIcon.classList.remove('bi-arrow-up-right', 'bi-arrow-down-right');
+                pnlIcon.classList.add(target >= 0 ? 'bi-arrow-up-right' : 'bi-arrow-down-right');
+            }
+            if (elementId === 'pnlValue') {
+                element.style.color = target >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+            }
+            
+            const step = (timestamp) => {
+                if (!startTime) startTime = timestamp;
+                const progress = timestamp - startTime;
+                
+                // Calculate current value based on progress
+                let currentValue = Math.min(absTarget, (progress / duration) * absTarget);
+
+                // Format the displayed value
+                let displayValue;
+                if (isPercent) {
+                    displayValue = `${sign}${currentValue.toFixed(2)}%`;
+                } else if (isCurrency) {
+                    displayValue = currentValue.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    // For P&L value, include the sign
+                    if (elementId === 'pnlValue') {
+                        displayValue = sign + displayValue;
+                    }
+                } else {
+                    displayValue = currentValue.toFixed(0);
+                }
+
+                element.textContent = displayValue;
+
+                if (progress < duration) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    // Ensure the final target value is set accurately
+                    if (isPercent) {
+                        element.textContent = `${sign}${absTarget.toFixed(2)}%`;
+                    } else if (isCurrency) {
+                        const finalDisplay = absTarget.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                        element.textContent = elementId === 'pnlValue' ? sign + finalDisplay : finalDisplay;
+                    } else {
+                        element.textContent = absTarget.toFixed(0);
+                    }
+                }
+            };
+
+            window.requestAnimationFrame(step);
+        };
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Run the Counter Animations on load
+            const metrics = document.querySelectorAll('.counter-value');
+            metrics.forEach(metric => {
+                const target = metric.getAttribute('data-target');
+                if (target) {
+                    animateCounter(metric.id, target);
+                }
+            });
+
+            // --- Modal Logic (Kept for functionality) ---
+
+            // Buy/Sell Modal Logic
+            var buySellModal = document.getElementById('buySellModal');
+            buySellModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget; 
+                var action = button.getAttribute('data-action'); 
+                var modalTitle = buySellModal.querySelector('.modal-title');
+                var transactionTypeSelect = buySellModal.querySelector('#transactionType');
+                var confirmTradeBtn = buySellModal.querySelector('#confirmTradeBtn');
+
+                modalTitle.textContent = action + ' Stock Order';
+                transactionTypeSelect.value = action;
+                confirmTradeBtn.textContent = 'Confirm ' + action + ' Order';
+                
+                confirmTradeBtn.classList.remove('btn-success', 'btn-danger', 'btn-primary', 'btn-secondary');
+                confirmTradeBtn.classList.add(action === 'Buy' ? 'btn-success' : 'btn-danger');
+
+                var row = button.closest('tr');
+                var stockSymbolInput = buySellModal.querySelector('#stockSymbol');
+
+                if (row) {
+                    var symbol = row.querySelector('th').textContent;
+                    stockSymbolInput.value = symbol;
+                } else {
+                    stockSymbolInput.value = '';
+                }
+            });
+
+            // Fund Transfer Modal Logic
+          //  var fundModal = document.getElementById('fundModal');
+         ///   fundModal.addEventListener('show.bs.modal', function(event) {
+         //       var button = event.relatedTarget; 
+             //   var action = button.getAttribute('data-action');
+              //  var modalTitle = fundModal.querySelector('.modal-title');
+              //  var fundActionTypeSelect = fundModal.querySelector('#fundActionType');
+              //  var confirmFundBtn = fundModal.querySelector('#confirmFundBtn');
+
+              //  modalTitle.textContent = action + ' Funds';
+              //  fundActionTypeSelect.value = action;
+                //confirmFundBtn.textContent = 'Confirm ' + action;
+                
+              //  confirmFundBtn.classList.remove('btn-primary', 'btn-secondary', 'btn-success', 'btn-danger');
+               // confirmFundBtn.classList.add(action === 'Deposit' ? 'btn-success' : 'btn-danger');
+
+               // const bankDetailsInput = fundModal.querySelector('#bankDetails');
+               // bankDetailsInput.placeholder = action === 'Deposit' ? 'Your Bank Account Number/Reference' : 'Your CDSC Account Number';
+        //    });
+       }); 
+    </script>
+
+</body>
+</html>
