@@ -262,7 +262,7 @@
                             <td class="text-muted">
                                 <i class="bi bi-dash-lg" style="color: var(--muted-text);"></i> 0.00%
                             </td>
-                           
+                            
                         </tr>
                     </tbody>
                 </table>
@@ -279,25 +279,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post">
+                    <form method="post">{% csrf_token %}
                         <div class="mb-3">
                             <label for="transactionType" class="form-label fw-bold">Action</label>
-                            <select class="form-select" id="transactionType" required>
+                            <select class="form-select" id="transactionType" name="bs" required>
                                 <option value="Buy">BUY - Place Order to Acquire</option>
                                 <option value="Sell">SELL - Place Order to Dispose</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="stockSymbol" class="form-label fw-bold">Stock Symbol</label>
-                            <input type="text" class="form-control" id="stockSymbol" placeholder="e.g., JKH.N0000" required>
+                            <input name="sym" type="text" class="form-control" id="stockSymbol" placeholder="e.g., JKH.N0000" required>
                         </div>
                         <div class="mb-3">
                             <label for="quantity" class="form-label fw-bold">Quantity</label>
-                            <input type="number" class="form-control" id="quantity" min="1" required>
+                            <input name="qty" type="number" class="form-control" id="quantity" min="1" required>
                         </div>
                         <div class="mb-3">
-                            <label for="limitPrice" class="form-label fw-bold">Limit Price (LKR) <small class="text-muted"> - Optional</small></label>
-                            <input type="number" class="form-control" id="limitPrice" step="0.01" placeholder="Market Price if empty">
+                            <label for="limitPrice" class="form-label fw-bold">Price (LKR) </label>
+                            <input name="price" type="number" class="form-control" id="limitPrice" step="0.01" placeholder="Market Price if empty" required>
                         </div>
                     
                 </div>
