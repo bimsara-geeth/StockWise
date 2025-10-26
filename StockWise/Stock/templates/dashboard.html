@@ -239,37 +239,18 @@
                         <tr>
                             <th scope="row" class="fw-bold">{{ x.symbol }}</th>
                             <td>{{x.total_qty}}</td>
-                            <td>150.00</td>
-                            <td>155.50</td>
-                            <td>77,750.00</td>
+                            <td>{{x.avg_cost}}</td>
+                            <td>1{{x.current_price}}</td>
+                            <td>7{{x.current_value}}</td>
                             <td class="change-percent positive fw-bold">
-                                <i class="bi bi-triangle-fill increase-symbol"></i> +3.67%
+                                <i class="bi bi-triangle-fill increase-symbol"></i> {{x.gain_loss_percent}}
                             </td>
                            
                         </tr>
                     {% endfor %}
-                        <tr>
-                            <th scope="row" class="fw-bold">COMB.N0000</th>
-                            <td>1200</td>
-                            <td>90.00</td>
-                            <td>88.20</td>
-                            <td>105,840.00</td>
-                            <td class="change-percent negative fw-bold">
-                                <i class="bi bi-triangle-fill decrease-symbol"></i> -2.00%
-                            </td>
+                       
                             
-                        </tr>
-                        <tr>
-                            <th scope="row" class="fw-bold">SPEN.N0000</th>
-                            <td>300</td>
-                            <td>25.50</td>
-                            <td>25.50</td>
-                            <td>7,650.00</td>
-                            <td class="text-muted">
-                                <i class="bi bi-dash-lg" style="color: var(--muted-text);"></i> 0.00%
-                            </td>
-                            
-                        </tr>
+                       
                     </tbody>
                 </table>
             </div>

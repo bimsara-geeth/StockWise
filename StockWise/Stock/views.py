@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 import collections
 from UserProfile.models import userprofile
 from django.contrib.auth.decorators import login_required
-from decimal import Decimal
+from decimal import Decimal , ROUND_HALF_UP
 # Assuming you have a Stock model and the necessary imports
 from django.shortcuts import render
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
@@ -59,11 +59,41 @@ def consolidate_portfolio_data(raw_positions):
         total_cost = data['total_cost']
         total_qty = data['total_qty']
         
+        
+        base_url = "https://www.cse.lk/api/"
+        endpoint = "companyInfoSummery"
+        #data = {"symbol": "LOLC.N0000"}
+       # data = {"symbol": data['symbol']}
+
+        response = requests.post(base_url + endpoint, data=data)
+
+        
+        
+        
+        
+        
         # Weighted Average Cost Basis calculation
         data['avg_cost'] = round(total_cost / total_qty, 2) if total_qty > 0 else 0
         
-        # Placeholder for real-time data integration
-        data['current_price'] = Decimal(155.50) # Replace with real API call result
+       
+        response_data = response.json()
+
+
+        symbol_info = response_data.get('reqSymbolInfo')
+        TWO_PLACES = Decimal("0.00")
+
+        if symbol_info:
+            last_traded_price = symbol_info.get('lastTradedPrice')
+            a=Decimal(last_traded_price)
+            rounded_price = a.quantize(TWO_PLACES, rounding=ROUND_HALF_UP)
+   
+            data['current_price'] =  rounded_price
+      
+
+
+
+
+
         data['current_value'] = round(total_qty * data['current_price'], 2)
         data['gain_loss_percent'] = round((data['current_value'] - total_cost) / total_cost * 100, 2) if total_cost > 0 else 0
 
