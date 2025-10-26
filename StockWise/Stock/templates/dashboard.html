@@ -231,9 +231,14 @@
                         </tr>
                     </thead>
                     <tbody>
+
+
+                    {% for x in user_stocks %}
+
+
                         <tr>
-                            <th scope="row" class="fw-bold">JKH.N0000</th>
-                            <td>500</td>
+                            <th scope="row" class="fw-bold">{{ x.symbol }}</th>
+                            <td>{{x.total_qty}}</td>
                             <td>150.00</td>
                             <td>155.50</td>
                             <td>77,750.00</td>
@@ -242,6 +247,7 @@
                             </td>
                            
                         </tr>
+                    {% endfor %}
                         <tr>
                             <th scope="row" class="fw-bold">COMB.N0000</th>
                             <td>1200</td>
