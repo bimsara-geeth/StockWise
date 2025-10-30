@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from dashboard.views import dashboard_view
 from authentication.views import *
 from django.conf import settings   # Application settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns  
@@ -26,6 +27,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),          # Admin interface
     path('login/', login_page, name='login_page'),    # Login page
     path('register/', register_page, name='register'),  # Registration page
+    path('dashboard/', dashboard_view, name='dashboard'),  # Dashboard page
 ]
 
 # Serve media files if DEBUG is True (development mode)

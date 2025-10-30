@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-import views
+# import views
 class myportfolio(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     stock_symbol = models.CharField(max_length=10)
@@ -19,7 +19,7 @@ class myportfolio(models.Model):
     def get_absolute_url(self):
         return reverse("myportfolio_detail", kwargs={"pk": self.pk})
 
-    def __init__(self, user):
-        self.user = user
-        self.portfolio = views.get_consolidated_portfolio(user)
-        return self.portfolio
+    # def __init__(self, user):
+    #     self.user = user
+    #     self.portfolio = views.get_consolidated_portfolio(user)
+    #     return self.portfolio
